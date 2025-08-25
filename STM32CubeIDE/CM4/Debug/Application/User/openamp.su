@@ -1,0 +1,8 @@
+../../../../../../../../Middlewares/Third_Party/OpenAMP/open-amp/lib/include/openamp/rpmsg.h:517:28:is_rpmsg_ept_ready	16	static
+../../../../../../../../Middlewares/Third_Party/OpenAMP/libmetal/lib/include/metal/device.h:147:1:metal_device_io_region	16	static
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/Src/openamp.c:74:12:OPENAMP_shmem_init	64	static
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/Src/openamp.c:143:5:MX_OPENAMP_Init	56	static
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/Src/openamp.c:216:6:OPENAMP_DeInit	8	static
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/Src/openamp.c:232:5:OPENAMP_create_endpoint	48	static
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/Src/openamp.c:250:6:OPENAMP_check_for_message	8	static
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/Src/openamp.c:258:6:OPENAMP_Wait_EndPointready	16	static
