@@ -1,4 +1,1 @@
-/**
-  @page STM project
-
- */
+STM Project that works together with web project ChartsHTML

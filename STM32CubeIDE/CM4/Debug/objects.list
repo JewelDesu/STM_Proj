@@ -9,6 +9,7 @@
 "./Application/User/stm32mp1xx_hal_msp.o"
 "./Application/User/stm32mp1xx_it.o"
 "./Application/User/syscalls.o"
+"./Drivers/BME280/bme280.o"
 "./Drivers/BSP/stm32mp15xx_disco.o"
 "./Drivers/CMSIS/system_stm32mp1xx.o"
 "./Drivers/OLED/ssd1306.o"

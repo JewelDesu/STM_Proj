@@ -22,7 +22,7 @@
 #include "main.h"
 #include "ssd1306.h"
 #include "ssd1306_fonts.h"
-#include "ssd1306_tests.h"
+#include "bme280.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -52,6 +52,7 @@ volatile int commandInit = 0;
 /* USER CODE BEGIN PV */
 VIRT_UART_HandleTypeDef huart0;
 VIRT_UART_HandleTypeDef huart1;
+VIRT_UART_HandleTypeDef huart2;
 
 __IO FlagStatus VirtUart0RxMsg = RESET;
 uint8_t VirtUart0ChannelBuffRx[MAX_BUFFER_SIZE];
@@ -60,6 +61,11 @@ uint16_t VirtUart0ChannelRxSize = 0;
 __IO FlagStatus VirtUart1RxMsg = RESET;
 uint8_t VirtUart1ChannelBuffRx[MAX_BUFFER_SIZE];
 uint16_t VirtUart1ChannelRxSize = 0;
+
+
+__IO FlagStatus VirtUart2RxMsg = RESET;
+uint8_t VirtUart2ChannelBuffRx[MAX_BUFFER_SIZE];
+uint16_t VirtUart2ChannelRxSize = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -74,10 +80,49 @@ static void MX_I2C5_Init(void);
 /* USER CODE BEGIN PFP */
 void VIRT_UART0_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 void VIRT_UART1_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
+void VIRT_UART2_RxCpltCallback(VIRT_UART_HandleTypeDef *huart);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+
+float temperature;
+float humidity;
+float pressure;
+
+struct bme280_dev dev;
+struct bme280_data comp_data;
+int8_t rslt;
+
+char line1[16];
+char line2[16];
+
+char hum_string[50];
+char temp_string[50];
+char press_string[50];
+
+int8_t user_i2c_read(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len)
+{
+    if(HAL_I2C_Mem_Read(&hi2c5, id << 1, reg_addr, I2C_MEMADD_SIZE_8BIT, data, len, 100) == HAL_OK)
+        return 0;
+    return -1;
+}
+
+
+void user_delay_ms(uint32_t period)
+{
+  HAL_Delay(period);
+}
+
+int8_t user_i2c_write(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len)
+{
+    if(HAL_I2C_Mem_Write(&hi2c5, id << 1, reg_addr, I2C_MEMADD_SIZE_8BIT, data, len, 100) == HAL_OK)
+        return 0;
+    return -1;
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -127,6 +172,23 @@ int main(void)
   if (ssd1306_Init () != 0){
 	  Error_Handler();
   }
+
+
+  dev.dev_id = BME280_I2C_ADDR_PRIM;
+  dev.intf = BME280_I2C_INTF;
+  dev.read = user_i2c_read;
+  dev.write = user_i2c_write;
+  dev.delay_ms = user_delay_ms;
+
+  rslt = bme280_init(&dev);
+
+  dev.settings.osr_h = BME280_OVERSAMPLING_1X;
+  dev.settings.osr_p = BME280_OVERSAMPLING_16X;
+  dev.settings.osr_t = BME280_OVERSAMPLING_2X;
+  dev.settings.filter = BME280_FILTER_COEFF_16;
+  rslt = bme280_set_sensor_settings(BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL, &dev);
+
+
   //ssd1306_SetCursor(5, 5);
  // ssd1306_WriteString("CACAAAAA \n", Font_7x10, White);
   //ssd1306_TestAll();
@@ -135,6 +197,8 @@ int main(void)
   /* Configure LED7 */
   BSP_LED_Init(LED7);
   BSP_LED_Toggle(LED7);
+
+
 
 
   EXTI14_IRQHandler_Config();
@@ -160,12 +224,22 @@ int main(void)
     Error_Handler();
   }
 
+  log_info("Virtual UART1 OpenAMP-rpmsg channel creation\r\n");
+  if (VIRT_UART_Init(&huart2) != VIRT_UART_OK) {
+    log_err("VIRT_UART_Init UART1 failed.\r\n");
+    Error_Handler();
+  }
+
   /*Need to register callback for message reception by channels*/
   if(VIRT_UART_RegisterCallback(&huart0, VIRT_UART_RXCPLT_CB_ID, VIRT_UART0_RxCpltCallback) != VIRT_UART_OK)
   {
    Error_Handler();
   }
   if(VIRT_UART_RegisterCallback(&huart1, VIRT_UART_RXCPLT_CB_ID, VIRT_UART1_RxCpltCallback) != VIRT_UART_OK)
+  {
+    Error_Handler();
+  }
+  if(VIRT_UART_RegisterCallback(&huart2, VIRT_UART_RXCPLT_CB_ID, VIRT_UART1_RxCpltCallback) != VIRT_UART_OK)
   {
     Error_Handler();
   }
@@ -176,46 +250,54 @@ int main(void)
   while (1)
   {
 
-    OPENAMP_check_for_message();
+	    /* Forced mode setting, switched to SLEEP mode after measurement */
+	  rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, &dev);
+	  dev.delay_ms(40);
 
-    /* USER CODE END WHILE */
-    if (buttonPressed)
-    {
-//        char *msg = "Chungus";
-//        VIRT_UART_Transmit(&huart1, (uint8_t *)msg, strlen(msg));
-        buttonPressed = 0;
-    }
+	  /*Get Data */
+	  rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, &dev);
+	  if(rslt == BME280_OK)
+	  {
+		  temperature = comp_data.temperature / 100.0;
+	  	  humidity = comp_data.humidity / 1024.0;
+	  	  pressure = comp_data.pressure / 10000.0;
 
-    if (commandInit)
-    {
-    	VirtUart0RxMsg = RESET;
-    	ssd1306_WriteString("0", Font_16x24, White);
-    	ssd1306_UpdateScreen();
-    	BSP_LED_Toggle(LED7);
-    	commandInit = 0;
-    }
+	  	  char temp[32];
+	  	  char hum[32];
+	  	  char press[32];
 
 
+	  	  /*Display Data */
 
-    if (VirtUart0RxMsg) {
-      VirtUart0RxMsg = RESET;
-      VIRT_UART_Transmit(&huart0, VirtUart0ChannelBuffRx, VirtUart0ChannelRxSize);
-    }
+	  	  memset(hum_string, 0, sizeof(hum_string));
+	  	  memset(temp_string, 0, sizeof(temp_string));
+	  	  memset(press_string, 0, sizeof(press_string));
 
-    if (VirtUart1RxMsg) {
-      VirtUart1RxMsg = RESET;
+	  	  sprintf(hum_string, "Humidity %03.1f %% ", humidity);
+	  	  sprintf(temp_string, "Temperature %03.1f C ", temperature);
+	  	  sprintf(press_string, "Pressure %03.1f hPa ", pressure);
 
-      ssd1306_SetCursor(5, 5);
-      ssd1306_WriteString(VirtUart1ChannelBuffRx, Font_11x18, White);
-      ssd1306_UpdateScreen();
-      VIRT_UART_Transmit(&huart1, VirtUart1ChannelBuffRx, VirtUart1ChannelRxSize);
-    }
+	  	  snprintf(temp, sizeof(temp), "%.2f\n", temperature);
+	  	  snprintf(hum, sizeof(hum), "%.2f\n", humidity);
+	  	  snprintf(press, sizeof(press), "%.2f\n", pressure);
 
-    if(counter++ == 500000) {
-        //BSP_LED_Toggle(LED7);
-        counter = 0;
-    }
+	  	  ssd1306_SetCursor (0, 0);
+	  	  ssd1306_WriteString (hum_string, Font_7x10, White);
+	  	  ssd1306_SetCursor (0, 20);
+	  	  ssd1306_WriteString (temp_string, Font_7x10, White);
+	  	  ssd1306_SetCursor (0, 40);
+	  	  ssd1306_WriteString (press_string, Font_7x10, White);
+	  	  ssd1306_UpdateScreen();
 
+
+	  	VIRT_UART_Transmit(&huart0, (uint8_t *)temp, strlen(temp));
+	  	VIRT_UART_Transmit(&huart1, (uint8_t *)hum, strlen(hum));
+	  	VIRT_UART_Transmit(&huart2, (uint8_t *)press, strlen(press));
+	  }
+
+	  HAL_Delay(1000);
+
+	  OPENAMP_check_for_message();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -383,6 +465,17 @@ void VIRT_UART1_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
     VirtUart1RxMsg = SET;
 }
 
+void VIRT_UART2_RxCpltCallback(VIRT_UART_HandleTypeDef *huart)
+{
+
+    log_info("Msg received on VIRTUAL UART2 channel:  %s \n\r", (char *) huart->pRxBuffPtr);
+
+    /* copy received msg in a variable to sent it back to master processor in main infinite loop*/
+    VirtUart2ChannelRxSize = huart->RxXferSize < MAX_BUFFER_SIZE? huart->RxXferSize : MAX_BUFFER_SIZE-1;
+    memcpy(VirtUart2ChannelBuffRx, huart->pRxBuffPtr, VirtUart2ChannelRxSize);
+    VirtUart2RxMsg = SET;
+}
+
 static void EXTI14_IRQHandler_Config(void)
 {
   GPIO_InitTypeDef   GPIO_InitStruct;
@@ -528,7 +621,7 @@ void Error_Handler(void)
 static void Exti14FallingCb(void)
 {
     BSP_LED_Toggle(LED7);
-    ssd1306_Clear();
+    //ssd1306_Clear();
     buttonPressed = 1;   // just set the flag
 }
 /* USER CODE END 4 */

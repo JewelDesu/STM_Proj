@@ -24,6 +24,7 @@ C_DEPS :=
 SUBDIRS := \
 Application/Startup \
 Application/User \
+Drivers/BME280 \
 Drivers/BSP \
 Drivers/CMSIS \
 Drivers/OLED \

@@ -70,7 +70,8 @@ Application/User/main.o: \
  C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306_conf.h \
  C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306_fonts.h \
  C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306.h \
- C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306_tests.h
+ C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/BME280/bme280.h \
+ C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/BME280/bme280_defs.h
 ../../../Inc/main.h:
 C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Drivers/STM32MP1xx_HAL_Driver/Inc/stm32mp1xx_hal.h:
 ../../../Inc/stm32mp1xx_hal_conf.h:
@@ -143,4 +144,5 @@ C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/
 C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306_conf.h:
 C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306_fonts.h:
 C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306.h:
-C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/OLED/ssd1306_tests.h:
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/BME280/bme280.h:
+C:/Users/Crystic/Downloads/stm32cubemp1-v1-7-0/STM32Cube_FW_MP1_V1.7.0/Projects/STM32MP157C-DK2/Applications/OpenAMP/OpenAMP_TTY_echo/STM32CubeIDE/CM4/Drivers/BME280/bme280_defs.h:

@@ -20,6 +20,7 @@ RM := rm -rf
 -include Drivers/OLED/subdir.mk
 -include Drivers/CMSIS/subdir.mk
 -include Drivers/BSP/subdir.mk
+-include Drivers/BME280/subdir.mk
 -include Application/User/subdir.mk
 -include Application/Startup/subdir.mk
 -include objects.mk
@@ -71,7 +72,7 @@ main-build: OpenAMP_TTY_echo_CM4.elf secondary-outputs
 
 # Tool invocations
 OpenAMP_TTY_echo_CM4.elf OpenAMP_TTY_echo_CM4.map: $(OBJS) $(USER_OBJS) C:\Users\Crystic\Downloads\stm32cubemp1-v1-7-0\STM32Cube_FW_MP1_V1.7.0\Projects\STM32MP157C-DK2\Applications\OpenAMP\OpenAMP_TTY_echo\STM32CubeIDE\CM4\STM32MP157CAAX_RAM.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "OpenAMP_TTY_echo_CM4.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Crystic\Downloads\stm32cubemp1-v1-7-0\STM32Cube_FW_MP1_V1.7.0\Projects\STM32MP157C-DK2\Applications\OpenAMP\OpenAMP_TTY_echo\STM32CubeIDE\CM4\STM32MP157CAAX_RAM.ld" --specs=nosys.specs -Wl,-Map="OpenAMP_TTY_echo_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+	arm-none-eabi-gcc -o "OpenAMP_TTY_echo_CM4.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Crystic\Downloads\stm32cubemp1-v1-7-0\STM32Cube_FW_MP1_V1.7.0\Projects\STM32MP157C-DK2\Applications\OpenAMP\OpenAMP_TTY_echo\STM32CubeIDE\CM4\STM32MP157CAAX_RAM.ld" --specs=nosys.specs -Wl,-Map="OpenAMP_TTY_echo_CM4.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
